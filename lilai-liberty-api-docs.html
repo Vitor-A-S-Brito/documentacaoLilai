@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentação API Lilai → Liberty Integration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .nav {
+            background: #f8f9fa;
+            padding: 1rem 2rem;
+            border-bottom: 2px solid #e9ecef;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .nav a {
+            color: #495057;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .nav a:hover {
+            background: #007bff;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 0.5rem;
+        }
+
+        .section h3 {
+            color: #34495e;
+            margin: 1.5rem 0 1rem 0;
+            font-size: 1.5rem;
+        }
+
+        .section h4 {
+            color: #2980b9;
+            margin: 1rem 0 0.5rem 0;
+            font-size: 1.2rem;
+        }
+
+        .schema-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin: 1rem 0;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .schema-header {
+            background: #007bff;
+            color: white;
+            padding: 1rem;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .schema-content {
+            padding: 1rem;
+        }
+
+        .field {
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            background: #f8f9fa;
+            border-left: 3px solid #28a745;
+            border-radius: 4px;
+        }
+
+        .field-name {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 0.3rem;
+        }
+
+        .field-type {
+            color: #e74c3c;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .field-desc {
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .required {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .optional {
+            color: #6c757d;
+        }
+
+        .phi-tag {
+            background: #ff6b6b;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin-left: 0.5rem;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid #4a5568;
+        }
+
+        .endpoint-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .endpoint-method {
+            background: #28a745;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 1rem;
+        }
+
+        .response-codes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .response-code {
+            background: white;
+            border-left: 4px solid #007bff;
+            padding: 1rem;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .response-code.success { border-left-color: #28a745; }
+        .response-code.client-error { border-left-color: #ffc107; }
+        .response-code.server-error { border-left-color: #dc3545; }
+
+        .highlight {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+
+        .security-box {
+            background: linear-gradient(135deg, #ff7979 0%, #eb4d4b 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #dee2e6;
+            margin-bottom: 1rem;
+        }
+
+        .tab {
+            padding: 0.8rem 1.5rem;
+            background: #e9ecef;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: #007bff;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .nav ul {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .section {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🔗 API Lilai → Liberty</h1>
+            <p class="subtitle">Documentação de Integração - Versão 1.0.0</p>
+        </header>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="#overview">Visão Geral</a></li>
+                <li><a href="#endpoint">Endpoint</a></li>
+                <li><a href="#authentication">Autenticação</a></li>
+                <li><a href="#schemas">Esquemas</a></li>
+                <li><a href="#payload">Payload</a></li>
+                <li><a href="#security">Segurança</a></li>
+            </ul>
+        </nav>
+
+        <main class="content">
+            <section id="overview" class="section">
+                <h2>📋 Visão Geral</h2>
+                <p>Esta documentação descreve o endpoint que a solução <strong>Lilai</strong> deve invocar para encaminhar dados clínicos do paciente ao sistema da <strong>Liberty</strong> após o processamento.</p>
+                
+                <div class="highlight">
+                    <h4>🎯 Objetivos da Integração</h4>
+                    <ul>
+                        <li>Padronizar a estrutura do payload JSON</li>
+                        <li>Definir requisitos de comunicação</li>
+                        <li>Estabelecer fluxo de chamadas seguro</li>
+                        <li>Garantir conformidade com padrões de saúde</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="endpoint" class="section">
+                <h2>🌐 Endpoint</h2>
+                <div class="endpoint-box">
+                    <div style="margin-bottom: 1rem;">
+                        <span class="endpoint-method">POST</span>
+                        <code>https://api.liberty.com.br/v1/integration/lilai/patient-data</code>
+                    </div>
+                    <p><strong>Content-Type:</strong> application/json</p>
+                    <p><strong>Rate Limit:</strong> 60 requisições por minuto</p>
+                </div>
+
+                <h3>📊 Códigos de Resposta</h3>
+                <div class="response-codes">
+                    <div class="response-code success">
+                        <h4>200 - Sucesso</h4>
+                        <p>Dados recebidos e processados com sucesso</p>
+                    </div>
+                    <div class="response-code client-error">
+                        <h4>400 - Requisição Inválida</h4>
+                        <p>Payload ou cabeçalhos incorretos</p>
+                    </div>
+                    <div class="response-code client-error">
+                        <h4>401 - Não Autorizado</h4>
+                        <p>Token inválido ou ausente</p>
+                    </div>
+                    <div class="response-code client-error">
+                        <h4>429 - Muitas Requisições</h4>
+                        <p>Limitação de taxa atingida</p>
+                    </div>
+                    <div class="response-code server-error">
+                        <h4>500 - Erro Interno</h4>
+                        <p>Erro interno do servidor Liberty</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="authentication" class="section">
+                <h2>🔐 Autenticação</h2>
+                
+                <div class="tabs">
+                    <button class="tab active" onclick="showTab('bearer')">Bearer Token</button>
+                    <button class="tab" onclick="showTab('oauth')">OAuth 2.0</button>
+                    <button class="tab" onclick="showTab('hmac')">HMAC Signature</button>
+                </div>
+
+                <div id="bearer" class="tab-content active">
+                    <h4>Bearer Token</h4>
+                    <div class="code-block">Authorization: Bearer &lt;LIBERTY_API_KEY&gt;</div>
+                    <p>A equipe Liberty fornecerá uma chave API que deve ser armazenada de forma criptografada.</p>
+                </div>
+
+                <div id="oauth" class="tab-content">
+                    <h4>OAuth 2.0 Client Credentials</h4>
+                    <div class="code-block">POST https://auth.liberty.com.br/oauth/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials&
+client_id=&lt;CLIENT_ID&gt;&
+client_secret=&lt;CLIENT_SECRET&gt;&
+scope=integration.write</div>
+                </div>
+
+                <div id="hmac" class="tab-content">
+                    <h4>Assinatura HMAC</h4>
+                    <div class="code-block">X-Signature: &lt;HMAC-SHA256-base64(payload, LIBERTY_HMAC_SECRET)&gt;</div>
+                    <p>Para garantir integridade dos dados, inclua uma assinatura HMAC no cabeçalho.</p>
+                </div>
+
+                <h4>🔒 Cabeçalhos Obrigatórios</h4>
+                <div class="code-block">Authorization: Bearer &lt;LIBERTY_API_KEY&gt;
+Accept-Version: v1
+Content-Type: application/json</div>
+            </section>
+
+            <section id="schemas" class="section">
+                <h2>📐 Esquemas de Dados</h2>
+
+                <div class="schema-card">
+                    <div class="schema-header">👤 Patient (Paciente)</div>
+                    <div class="schema-content">
+                        <div class="field">
+                            <div class="field-name">phiPointer <span class="required">(obrigatório)</span> <span class="phi-tag">PHI</span></div>
+                            <div class="field-type">UUID</div>
+                            <div class="field-desc">Chave primária única do paciente (criptografado)</div>
+                        </div>
+                        <div class="field">
+                            <div class="field-name">fullName <span class="required">(obrigatório)</span> <span class="phi-tag">PHI</span></div>
+                            <div class="field-type">string</div>
+                            <div class="field-desc">Nome completo do paciente (criptografado)</div>
+                        </div>
+                        <div class="field">
+                            <div class="field-name">birthDate <span class="required">(obrigatório)</span> <span class="phi-tag">PHI</span></div>
+                            <div class="field-type">date</div>
+                            <div class="field-desc">Data de nascimento (criptografada)</div>
+                        </div>
+                        <div class="field">
+                            <div class="field-name">cpf <span class="required">(obrigatório)</span> <span class="phi-tag">PHI</span></div>
+                            <div class="field-type">string</div>
+                            <div class="field-desc">CPF do paciente (criptografado)</div>
+                        </div>
+                        <div class="field">
+                            <div class="field-name">contactEmail <span class="optional">(opcional)</span> <span class="phi-tag">PHI</span></div>
+                            <div class="field-type">string</div>
+                            <div class="field-desc">E-mail do paciente (criptografado)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="schema-card">
+                    <div class="schema-header">📊 SocioDemographics</div>
+                    <div class="schema-content">
+                        <div class="field">
+                            <div class="field-name">gender <span class="required">(obrigatório)</span></div>
+                            <div class="field-type">enum ["M", "F", "O"]</div>
+                            <div class="field-desc">Gênero do paciente</div>
+                        </div>
+                        <div class="field">
+                            <div class="field-name">maritalStatus <span class="required">(obrigatório)</span></div>
+                            <div class="field-type">string</div>
+                            <div class="field-desc">Estado civil do paciente</div>
+                        </div>
+                        <div class="field">
+                            <div class="field-name">deprivationIndex <span class="optional">(opcional)</span></div>
+                            <div class="field-type">float [0-1]</div>
+                            <div class="field-desc">Índice de privação social</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="schema-card">
+                    <div class="schema-header">🏃‍♀️ LifestyleData</div>
+                    <div class="schema-content">
+                        <div class="field">
+                            <div class="field-name">sleepHours <span class="required">(obrigatório)</span></div>
+                            <div class="field-type">integer [0-12]</div>
+                            <div class="field-desc">Número de horas de sono</div>
+                        </div>
+                        <div class="field">
+                            <div class="field-name">exerciseFrequency <span class="required">(obrigatório)</span></div>
+                            <div class="field-type">enum [0-3]</div>
+                            <div class="field-desc">Frequência de exercícios físicos</div>
+                        </div>
+                        <div class="field">
+                            <div class="field-name">smoking <span class="required">(obrigatório)</span></div>
+                            <div class="field-type">boolean</div>
+                            <div class="field-desc">Indica se o paciente fuma</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="schema-card">
+                    <div class="schema-header">🧬 FamilyHistory</div>
+                    <div class="schema-content">
+                        <div class="field">
+                            <div class="field-name">firstDegree_CAD <span class="required">(obrigatório)</span></div>
+                            <div class="field-type">boolean</div>
+                            <div class="field-desc">Doença arterial coronariana em parentes de primeiro grau</div>
+                        </div>
+                        <div class="field">
+                            <div class="field-name">firstDegree_DM2 <span class="required">(obrigatório)</span></div>
+                            <div class="field-type">boolean</div>
+                            <div class="field-desc">Diabetes mellitus tipo 2 em parentes de primeiro grau</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="schema-card">
+                    <div class="schema-header">🩺 MedicalReport</div>
+                    <div class="schema-content">
+                        <div class="field">
+                            <div class="field-name">complaints <span class="required">(obrigatório)</span></div>
+                            <div class="field-type">object</div>
+                            <div class="field-desc">Queixas físicas e de saúde mental do paciente</div>
+                        </div>
+                        <div class="field">
+                            <div class="field-name">cid_10 <span class="required">(obrigatório)</span></div>
+                            <div class="field-type">array[object]</div>
+                            <div class="field-desc">Códigos CID-10 com descrição e raciocínio</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="schema-card">
+                    <div class="schema-header">⚠️ PointsOfAttention</div>
+                    <div class="schema-content">
+                        <div class="field">
+                            <div class="field-name">mentalHealthRisks <span class="required">(obrigatório)</span></div>
+                            <div class="field-type">object</div>
+                            <div class="field-desc">Riscos de depressão, ansiedade e estresse com percentuais</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="payload" class="section">
+                <h2>📦 Exemplo de Payload Completo</h2>
+                <div class="code-block">{
+  "phiPointer": "550e8400-e29b-41d4-a716-446655440000",
+  "fullName": "EncryptedString",
+  "birthDate": "1980-05-15",
+  "birthPlace": "São Paulo, SP, Brasil",
+  "cpf": "EncryptedString",
+  "residenceAddress": "EncryptedString",
+  "contactPhone": "EncryptedString",
+  "contactEmail": "EncryptedString",
+  
+  "socioDemographics": {
+    "socioDemographicsID": "660e8400-e29b-11d4-a716-446655440000",
+    "patientID": "550e8400-e29b-41d4-a716-446655440000",
+    "gender": "M",
+    "ethnicity": "Pardo",
+    "maritalStatus": "Casado",
+    "childrenCount": 2,
+    "educationLevel": "Superior Completo",
+    "incomeLevel": "R$ 5.000–R$ 10.000",
+    "deprivationIndex": 0.3,
+    "socioDemographicsDate": "2025-06-05T14:30:00Z"
+  },
+  
+  "lifestyleData": {
+    "lifestyleDataID": "770e8400-e29b-51d4-a716-446655440000",
+    "patientID": "550e8400-e29b-41d4-a716-446655440000",
+    "sleepHours": 7,
+    "sleepQuality": 1,
+    "exerciseFrequency": 2,
+    "dietType": "Equilibrada",
+    "waterIntake": 2,
+    "smoking": false,
+    "alcoholConsumption": true,
+    "lifestyleDate": "2025-06-05T14:40:00Z"
+  },
+  
+  "pointsOfAttention": {
+    "attentionPoints": [
+      "Monitorar pressão arterial",
+      "Avaliar risco de depressão"
+    ],
+    "mentalHealthRisks": {
+      "depression": {
+        "riskPercent": 45.5,
+        "justification": "Histórico familiar e sintomas atuais"
+      },
+      "anxiety": {
+        "riskPercent": 30.0,
+        "justification": "Referências de ansiedade leve"
+      }
+    }
+  },
+  
+  "ncdRisk": [
+    {
+      "category": "Cardiovascular",
+      "percent": 40.0,
+      "description": "Risco moderado de doença cardiovascular",
+      "risk": "Médio",
+      "clinicalReasoning": "Hipertensão e histórico familiar"
+    }
+  ]
+}</div>
+            </section>
+
+            <section id="security" class="section">
+                <h2>🛡️ Segurança e Conformidade</h2>
+                
+                <div class="security-box">
+                    <h3>🔒 Criptografia PHI</h3>
+                    <p>Todos os dados marcados como PHI (Patient Health Information) devem ser criptografados usando AES-256 antes do envio. A Liberty realizará a descriptografia no servidor.</p>
+                </div>
+
+                <h3>🔐 Configurações de Segurança</h3>
+                <ul>
+                    <li><strong>TLS/HTTPS:</strong> Obrigatório TLS 1.2+</li>
+                    <li><strong>Timeout:</strong> 15 segundos máximo</li>
+                    <li><strong>Retry Policy:</strong> Máximo 2 tentativas com backoff exponencial</li>
+                    <li><strong>Rate Limiting:</strong> 60 req/min</li>
+                </ul>
+
+                <h4>🏥 Conformidade LGPD/HIPAA</h4>
+                <div class="highlight">
+                    <p>Esta integração segue as melhores práticas de segurança para dados de saúde, incluindo:</p>
+                    <ul>
+                        <li>Criptografia end-to-end para dados sensíveis</li>
+                        <li>Logs auditáveis de todas as transações</li>
+                        <li>Controle de acesso baseado em permissões</li>
+                        <li>Retenção controlada de dados</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tab contents
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('.nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    targetSection.scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add scroll spy functionality
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.nav a');
+            
+            let currentSection = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                if (scrollY >= sectionTop) {
+                    currentSection = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === currentSection) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
